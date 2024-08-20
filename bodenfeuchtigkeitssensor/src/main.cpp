@@ -40,7 +40,8 @@ void loop() {
     pixels.setPixelColor(i, pixels.Color(0, 50, 0));
   }
 
-    pixels.show();
+Serial.println(analogRead(SENSOR_PIN));
+
 
   if (analogRead(SENSOR_PIN) <= 500){
     for (int i = 0; i < 1 ; i++) {

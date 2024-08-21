@@ -1,5 +1,8 @@
 #include <Arduino.h>
 #include <Adafruit_NeoPixel.h>
+// display
+#include <U8g2lib.h>  
+#include <Wire.h> 
 
 #define SENSOR_PIN 33
 #define MOTOR_PIN 27
@@ -22,6 +25,13 @@ bool pumpIsOn = false;
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 
+// display
+#define DISP_ADDR 0x78
+#define DISP_SDA 21 
+#define DISP_SCL 22 
+
+U8G2_SSD1306_128X64_NONAME_1_SW_I2C display(U8G2_R0, DISP_SCL, DISP_SDA);
+
 
 
 void setup() {
@@ -30,6 +40,12 @@ void setup() {
   pinMode(MOTOR_PIN, OUTPUT);
   pixels.begin();    
   pixels.setBrightness(125);
+
+
+  // display
+  
+  display.setI2CAddress(DISP_ADDR);  
+  display.begin();  
   
 }
 
@@ -81,4 +97,18 @@ Serial.println(numberLED);
   else{
     digitalWrite(MOTOR_PIN, LOW);
   }
+
+
+
+
+  // display loop
+  display.firstPage();  // Initialisierung Picture-Loop
+    do {
+        /* Hier Anzeigeinhalt frei definieren */
+        display.setFont(u8g2_font_ncenB14_tr);  // optional: gewünschte Schriftart
+        // display.print(analogRead(SENSOR_PIN));
+        display.drawStr( 0,20,String(analogRead(SENSOR_PIN)).c_str());
+        // display.drawStr(0, 20, "Hello World!");
+    } while (display.nextPage());  // Sobald Inhalt angezeigt: Verlassen der Schleife
+    /* Ende Picture-Loop */
 }

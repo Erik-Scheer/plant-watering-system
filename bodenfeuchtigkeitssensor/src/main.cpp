@@ -68,14 +68,6 @@ void loop() {
 Serial.println(sensorInput);
 Serial.println(numberLED);
 
-
-  // if (analogRead(SENSOR_PIN) <= 500){
-    
-  // }
-  // else{
-  //   digitalWrite(MOTOR_PIN, LOW);
-  // }
-
   if (analogRead(SENSOR_PIN) >= 2000){
 
     if (!pumpIsOn) {

@@ -13,6 +13,9 @@ int waitingUntilRemeasure = 10000;
 int wateringTime = 1000;
 
 
+int pumpTimeStamp = -10000;
+bool pumpIsOn = false;
+
 #define PIN         32    // Verwendeter GPIO-Pin
 #define NUMPIXELS   25    // Anzahl an LEDs in Strip
 
@@ -39,12 +42,12 @@ void loop() {
   int numberLED = (sensorInput * ledRange) / sensorRange;
   Serial.println(numberLED + "--------------------------------------------------------------------------------------------------------");
 
-  pixels.clear(); 
+  pixels.clear();
 
   for (int i = 0; i < (25 - numberLED) ; i++) {
     pixels.setPixelColor(i, pixels.Color(0, 50, 0));
   }
-  pixels.show(); 
+  pixels.show();
 
 Serial.println(sensorInput);
 Serial.println(numberLED);
@@ -58,13 +61,22 @@ Serial.println(numberLED);
   // }
 
   if (analogRead(SENSOR_PIN) >= 2000){
-    digitalWrite(MOTOR_PIN, HIGH);
-    delay(wateringTime);
-    digitalWrite(MOTOR_PIN, LOW);
-    delay(waitingUntilRemeasure);
-    delay(wateringTime);
-    digitalWrite(MOTOR_PIN, LOW);
-    delay(waitingUntilRemeasure);
+
+    if (!pumpIsOn) {
+      if (pumpTimeStamp + waitingUntilRemeasure < millis()){
+        digitalWrite(MOTOR_PIN, HIGH);
+        pumpIsOn = true;
+        pumpTimeStamp = millis();
+      }
+    }
+    else {
+      if (pumpTimeStamp + wateringTime < millis()){
+        digitalWrite(MOTOR_PIN, LOW);
+        pumpIsOn = false;
+        pumpTimeStamp = millis();
+      }
+    }
+
   }
   else{
     digitalWrite(MOTOR_PIN, LOW);
